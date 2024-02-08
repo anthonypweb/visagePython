@@ -91,4 +91,4 @@ if __name__ == '__main__':
         os.makedirs(UPLOAD_FOLDER)
 
     # Lancer le serveur Flask
-    app.run(debug=True, port=5001, ssl_context=('cert.pem', 'key.pem'))
+    app.run(debug=True, port=5002)
