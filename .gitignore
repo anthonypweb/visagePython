@@ -1,0 +1,43 @@
+# Fichiers système
+.DS_Store
+
+# Fichiers bytecode Python
+__pycache__/
+
+# Fichiers d'environnement
+.env
+
+# Répertoire de dépendances (venv, env, etc.)
+venv/
+env/
+ENV/
+
+# Fichiers de sauvegarde
+*.bak
+*.swp
+
+# Fichiers de logs et fichiers temporaires
+*.log
+*.tmp
+
+# Fichiers de compilation
+*.pyc
+*.pyo
+*.pyd
+
+# Fichiers de configuration
+*.ini
+*.cfg
+
+# Fichiers d'historique de version
+.history/
+
+# Fichiers de données
+*.db
+
+# Fichiers générés par IDE/text editors
+.idea/
+.vscode/
+
+# Fichiers de cache
+.cache/
