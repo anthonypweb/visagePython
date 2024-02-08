@@ -14,12 +14,21 @@ app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
 
 # Définir le chemin du modèle de détection de visage
 face_cascade_path = "haarcascade_frontalface_default.xml"
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + face_cascade_path)
+
+# Chemin du fichier XML de détection de visage
+
+# Vérifier si le fichier existe
+if os.path.isfile(face_cascade_path):
+    print("Le fichier XML de détection de visage existe.")
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + face_cascade_path)
+
+else:
+    print("Le fichier XML de détection de visage n'existe pas ou n'est pas accessible.")
 
 # Fonction pour détourer le visage dans l'image
 def crop_face(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=1)
     if len(faces) > 0:
         (x, y, w, h) = faces[0]
         # Agrandir le rectangle de détection pour capturer une zone plus grande autour du visage
@@ -50,6 +59,7 @@ def capture():
 
     # Détourer le visage dans l'image
     cropped_face = crop_face(frame)
+    print("Résolution de l'image capturée :", frame.shape)
 
     # Vérifier si le visage est détecté
     if cropped_face is not None:
