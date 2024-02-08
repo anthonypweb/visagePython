@@ -1,7 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, jsonify
-import cv2
+from flask import Flask, render_template, request, jsonify
 import os
+import base64
 from datetime import datetime
+import cv2
+import numpy as np
+
+# Initialiser le détecteur de visages de OpenCV
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 app = Flask(__name__)
 
@@ -9,86 +14,60 @@ app = Flask(__name__)
 UPLOAD_FOLDER = './photos'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Définir la taille maximale du fichier (10 Mo)
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
-
-# Définir le chemin du modèle de détection de visage
-face_cascade_path = "haarcascade_frontalface_default.xml"
-
-# Chemin du fichier XML de détection de visage
-
-# Vérifier si le fichier existe
-if os.path.isfile(face_cascade_path):
-    print("Le fichier XML de détection de visage existe.")
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + face_cascade_path)
-
-else:
-    print("Le fichier XML de détection de visage n'existe pas ou n'est pas accessible.")
-
-# Fonction pour détourer le visage dans l'image
-def crop_face(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=1)
-    if len(faces) > 0:
-        (x, y, w, h) = faces[0]
-        # Agrandir le rectangle de détection pour capturer une zone plus grande autour du visage
-        margin = 70  # Vous pouvez ajuster cette valeur selon vos besoins
-        x = max(0, x - margin)
-        y = max(0, y - margin)
-        w = min(image.shape[1], w + 2 * margin)
-        h = min(image.shape[0], h + 2 * margin)
-        cropped_face = image[y:y+h, x:x+w]
-        return cropped_face
-    else:
-        print("Aucun visage détecté !")
-        return None
-
 # Page d'accueil
 @app.route('/')
 def index():
     return render_template('index.html')
+def detect_faces(frame, padding=50):
+    # Convertir l'image en niveaux de gris
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # Détecter les visages dans l'image
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    # Recadrer chaque visage détecté
+    for (x, y, w, h) in faces:
+        # Ajouter du padding autour des coordonnées du visage
+        x_pad = max(x - padding, 0)
+        y_pad = max(y - padding, 0)
+        w_pad = min(w + 2 * padding, frame.shape[1] - x_pad)
+        h_pad = min(h + 2 * padding, frame.shape[0] - y_pad)
+        # Recadrer le visage avec du padding
+        cropped_face = frame[y_pad:y_pad+h_pad, x_pad:x_pad+w_pad]
+        # Vous pouvez faire quelque chose avec le visage recadré ici
+        # Par exemple, vous pouvez enregistrer chaque visage recadré dans une liste
+        # Ou les traiter d'une autre manière
+    return cropped_face
 
-# Route pour capturer une photo
 @app.route('/process_image', methods=['POST'])
-def capture():
-    # Accéder à la webcam
-    cap = cv2.VideoCapture(0)
-
-    # Lire une image depuis la webcam
-    ret, frame = cap.read()
-
-    # Détourer le visage dans l'image
-    cropped_face = crop_face(frame)
-    print("Résolution de l'image capturée :", frame.shape)
-
-    # Vérifier si le visage est détecté
-    if cropped_face is not None:
+def process_image():
+    if 'image' in request.json:
+        print("Une image a été envoyée.")
+        # Récupérer les données de l'image depuis la requête JSON
+        image_data = request.json['image']
+        # Extraire les données base64 de l'image
+        _, base64_data = image_data.split(',')
+        # Décoder les données base64 en bytes
+        photo_bytes = base64.b64decode(base64_data)
+        # Lire l'image à l'aide de OpenCV
+        nparr = np.frombuffer(photo_bytes, np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        # Détecter les visages dans l'image
+        frame_with_faces = detect_faces(frame)
         # Générer un nom de fichier unique basé sur la date et l'heure actuelles
         now = datetime.now()
         timestamp = now.strftime("%Y%m%d%H%M%S")
-        filename = f"photo_{timestamp}.png"  # Enregistrer au format PNG pour la transparence
-
+        image_name = f"image_{timestamp}.jpg"
         # Enregistrer l'image dans le dossier de téléchargement
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        cv2.imwrite(filepath, cropped_face)
-        print("Image enregistrée avec succès :", filepath)
-        return jsonify({'success': True})
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        cv2.imwrite(image_path, frame_with_faces)
+        print("L'image a été enregistrée avec succès :", image_path)
+        return jsonify({'success': True, 'message': 'Image sauvegardée avec succès.', 'image_path': image_path})
     else:
-        print("Aucun visage n'a été détecté dans l'image capturée.")
-        return jsonify({'success': False, 'message': 'Aucun visage détecté dans l\'image capturée'})
-
-    # Libérer la webcam
-    cap.release()
-
-# Route pour accéder aux photos téléchargées
-@app.route('/photos/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+        print("Aucune image n'a été envoyée.")
+        return jsonify({'success': False, 'message': 'Aucune image n\'a été envoyée.'})
 
 if __name__ == '__main__':
     # Créer le dossier de téléchargement s'il n'existe pas
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
-
     # Lancer le serveur Flask
-    app.run(debug=True, port=5001, ssl_context=('cert.pem', 'key.pem'))
+    app.run(debug=True)
