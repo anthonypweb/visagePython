@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  
     <title>Webcam Capture</title>
 </head>
 <body>
+    <h1>Fun Karoussel</h1>
     <video id="video" width="640" height="480"  autoplay ></video>
-    <button id="capture">Capture</button>
     <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+<div>
+    <button id="capture">Capture</button>
+
     <button id="connectButton">Connect Serial Port</button>
+
+</div>
 
     <script>
         // Déclarer les variables globales pour la vidéo et le canvas
@@ -108,5 +112,59 @@
                 console.error('Error accessing webcam:', error);
             });
     </script>
+
+    <style>
+        /* Style pour la vidéo */
+body{
+    background-image: url('https://thumbs.dreamstime.com/b/vintage-circus-carnival-background-strips-stars-red-high-resolution-great-your-show-party-birthday-marriage-any-135055104.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+#video {
+    width: 640px;
+    height: 480px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  
+  /* Style pour le bouton de capture */
+  #capture {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  /* Style pour le canvas (élément de dessin) */
+  #canvas {
+    display: none; /* On le cache par défaut */
+  }
+  
+  /* Style pour le bouton de connexion au port série */
+  #connectButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  h1{ 
+    margin-top: 30px;
+    color: white    ;
+    font-size: 40px;
+    font-weight: bold;
+   }
+    </style>
 </body>
 </html>
