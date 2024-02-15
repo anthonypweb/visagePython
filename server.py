@@ -12,6 +12,7 @@ app = Flask(__name__)
 
 # Chemin du dossier où les photos seront enregistrées
 UPLOAD_FOLDER = '../Fun-Karousel-unity/Assets/photos'
+#UPLOAD_FOLDER = './photos'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Page d'accueil
@@ -78,9 +79,16 @@ def process_image():
         image_name = f"image_{timestamp}.png"
         # Enregistrer l'image dans le dossier de téléchargement
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
-        cv2.imwrite(image_path, frame_with_faces)
-        print("L'image a été enregistrée avec succès :", image_path)
-        return jsonify({'success': True, 'message': 'Image sauvegardée avec succès.', 'image_path': image_path})
+
+        if frame_with_faces is not None:
+            cv2.imwrite(image_path, frame_with_faces)
+            print("L'image a été enregistrée avec succès :")
+            return jsonify({'success': True, 'message': 'Image sauvegardée avec succès.', 'image_path': image_path})
+        else:
+            print("L'image na pas fonctionné")
+            return jsonify({'success': False, 'message': 'Aucun visage detecté'})
+
+
     else:
         print("Aucune image n'a été envoyée.")
         return jsonify({'success': False, 'message': 'Aucune image n\'a été envoyée.'})
