@@ -24,8 +24,8 @@
         async function requestSerialPort() {
             try {
                 // Demander à l'utilisateur de sélectionner un port série
-                const port = await navigator.serial.requestPort();
-
+                const ports = await navigator.serial.getPorts();
+                const port = ports[0];
                 // Ouvrir le port série
                 await port.open({ baudRate: 9600 }); // Spécifier le débit en bauds (baudRate)
 
@@ -42,12 +42,11 @@
                     processData(new TextDecoder().decode(value));
                 }
 
-                // Masquer le bouton après l'autorisation
-                document.getElementById('connectButton').style.display = 'none';
             } catch (error) {
                 console.error('Erreur lors de l\'accès au port série :', error);
             }
         }
+        window.onload = requestSerialPort;
 
         // Fonction pour traiter les données reçues du port série
         function processData(data) {
@@ -92,6 +91,8 @@ function sendData(imageData) {
     .then(data => {
         if (data.success) {
             console.log('Image uploaded successfully');
+            sendToSerialPort("photo");
+
             // Créer une balise HTML pour afficher le message de succès
             const successMessage = document.createElement('div');
             successMessage.textContent = 'Image a été enregistrée';
@@ -147,6 +148,42 @@ function sendData(imageData) {
             .catch(function (error) {
                 console.error('Error accessing webcam:', error);
             });
+
+// Fonction pour envoyer des données à un port série déjà ouvert
+async function sendToSerialPort(message) {
+    try {
+        // Obtenir la liste des ports série déjà autorisés
+        const ports = await navigator.serial.getPorts();
+
+        // Vérifier s'il existe des ports série déjà autorisés
+        if (ports && ports.length > 0) {
+            const port = ports[0];
+
+            // Créer un transformateur de texte en flux d'octets
+            const textEncoder = new TextEncoderStream();
+
+            // Créer un flux d'écriture
+            const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
+
+            // Obtenir le writer
+            const writer = textEncoder.writable.getWriter();
+
+            // Écrire le message dans le flux
+            await writer.write(message);
+            console.log(message)
+            // Terminer l'écriture
+            writer.close();
+            console.log('Données envoyées avec succès au port série.');
+        } else {
+            console.error('Aucun port série déjà autorisé trouvé.');
+        }
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi de données au port série :', error);
+    }
+}
+
+
+
     </script>
 
     <style>
