@@ -11,8 +11,8 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 app = Flask(__name__)
 
 # Chemin du dossier où les photos seront enregistrées
-UPLOAD_FOLDER = '../Fun-Karousel-unity/Assets/photos'
-#UPLOAD_FOLDER = './photos'
+#UPLOAD_FOLDER = '../Fun-Karousel-unity/Assets/photos'
+UPLOAD_FOLDER = './photos'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Page d'accueil
