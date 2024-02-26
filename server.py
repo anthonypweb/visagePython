@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import os
 import base64
 from datetime import datetime
@@ -11,8 +11,8 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 app = Flask(__name__)
 
 # Chemin du dossier où les photos seront enregistrées
-#UPLOAD_FOLDER = '../Fun-Karousel-unity/Assets/photos'
-UPLOAD_FOLDER = './photos'
+UPLOAD_FOLDER = '../Fun-Karousel-unity/Assets/photos'
+#UPLOAD_FOLDER = './photos'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Page d'accueil
@@ -92,10 +92,15 @@ def process_image():
     else:
         print("Aucune image n'a été envoyée.")
         return jsonify({'success': False, 'message': 'Aucune image n\'a été envoyée.'})
+        # Définition de la route pour servir les images
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    return send_from_directory('images', filename)
 
 if __name__ == '__main__':
     # Créer le dossier de téléchargement s'il n'existe pas
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
     # Lancer le serveur Flask
+
     app.run(debug=True)
