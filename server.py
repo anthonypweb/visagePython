@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, send_file
 import os
 import base64
 from datetime import datetime
@@ -11,8 +11,8 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 app = Flask(__name__)
 
 # Chemin du dossier où les photos seront enregistrées
-UPLOAD_FOLDER = '../Fun-Karousel-unity/Assets/photos'
-#UPLOAD_FOLDER = './photos'
+#UPLOAD_FOLDER = '../Fun-Karousel-unity/Assets/photos'
+UPLOAD_FOLDER = './photos'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Page d'accueil
@@ -58,6 +58,18 @@ def remove_background(image_path):
         result = result[y_padding:y_padding+new_height, x_padding:x_padding+new_width]
         
         return result
+    
+@app.route('/latest_photo', methods=['GET'])
+def get_latest_photo():
+    # Récupérer la liste de tous les fichiers dans le dossier photo
+    photo_files = os.listdir(app.config['UPLOAD_FOLDER'])
+    # Trier la liste des fichiers par date de modification
+    photo_files.sort(key=lambda x: os.path.getmtime(os.path.join(app.config['UPLOAD_FOLDER'], x)), reverse=True)
+    # Prendre le chemin de la première photo (la plus récente)
+    latest_photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo_files[0])
+    # Envoyer le fichier au client
+    return send_file(latest_photo_path, mimetype='image/png')
+
 @app.route('/process_image', methods=['POST'])
 def process_image():
     if 'image' in request.json:
