@@ -1,6 +1,6 @@
    /* Style pour la vidéo */
    body {
-    background-image: url("https://thumbs.dreamstime.com/b/vintage-circus-carnival-background-strips-stars-red-high-resolution-great-your-show-party-birthday-marriage-any-135055104.jpg");
+    background-image: url('/static/MicrosoftTeams-image\ \(3\).png');
     background-repeat: no-repeat;
     background-size: cover;
     display: flex;
@@ -13,6 +13,8 @@
   }
 
   #video {
+
+    transform: scaleX(-1); 
     width: 100%;
     height: 100vh;
   }
@@ -37,15 +39,13 @@
   h1 {
     margin-top: 30px;
     color: white;
-    font-size: 40px;
-    font-weight: bold;
   }
 
   .allo {
     background-repeat: no-repeat;
     position: absolute;
-    top: 0;
-    left: 90px;
-    width: 635px;
-    height: 100vh;
+    top: 20px;
+    left: 25%;
+    width: 435px;
+    height:92vh;
   }                                                                                                                           
