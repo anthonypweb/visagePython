@@ -134,6 +134,7 @@ fetch('/latest_photo')
          successMessage.remove();
          image.remove();
          captureButtonEnabled = true
+         sendToSerialPort(5);
 
      }, 5000);
  })
