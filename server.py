@@ -59,6 +59,11 @@ def remove_background(image_path):
         
         return result
     
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    # Récupérer le chemin absolu du fichier dans le dossier "static"
+    return send_from_directory('static', filename)
+
 @app.route('/latest_photo', methods=['GET'])
 def get_latest_photo():
     # Récupérer la liste de tous les fichiers dans le dossier photo

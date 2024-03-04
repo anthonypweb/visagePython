@@ -1,0 +1,51 @@
+   /* Style pour la vidéo */
+   body {
+    background-image: url("https://thumbs.dreamstime.com/b/vintage-circus-carnival-background-strips-stars-red-high-resolution-great-your-show-party-birthday-marriage-any-135055104.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    margin: 0;
+  }
+
+  #video {
+    width: 100%;
+    height: 100vh;
+  }
+
+
+  /* Style pour le canvas (élément de dessin) */
+  #canvas {
+    display: none; /* On le cache par défaut */
+  }
+
+  /* Style pour le bouton de connexion au port série */
+  #connectButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  h1 {
+    margin-top: 30px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+  }
+
+  .allo {
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 0;
+    left: 175px;
+    width: 1110px;
+    height: 100vh;
+  }
