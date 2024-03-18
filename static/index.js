@@ -146,7 +146,12 @@ fetch('/latest_photo')
          errorMessage.style.position = 'absolute';
          errorMessage.style.width = '100%';
          errorMessage.style.height = '100vh';
-         errorMessage.textContent = 'Aucun visage detecté!';
+         const h1Element = document.createElement('h1');
+         h1Element.textContent = 'Aucun visage détecté!';
+         h1Element.style.marginTop= '40vh';
+         h1Element.style.textAlign = 'center';
+         errorMessage.appendChild(h1Element);
+         
          // Ajouter du style à la balise
          errorMessage.style.backgroundColor = '#dc3545';
          errorMessage.style.color = '#fff';
@@ -157,7 +162,7 @@ fetch('/latest_photo')
          document.body.appendChild(errorMessage);
          setTimeout(function() {
              errorMessage.remove();
-         }, 1000);
+         }, 2000);
      }
  })
  .catch(error => {
