@@ -115,10 +115,18 @@ fetch('/latest_photo')
      // Ajouter l'élément image à la page
 
      const successMessage = document.createElement('div');
+     const compteur = document.createElement('h1');
+     compteur.id = "compteur";
      successMessage.style.position = 'absolute';
      successMessage.style.width = '100%';
      successMessage.style.height = '100vh';
-     successMessage.textContent = 'Image a été enregistrée';
+     const h1Element = document.createElement('h1');
+     h1Element.textContent = 'Vous êtes maintenant sur le carrousel!';
+     h1Element.style.marginTop= '20vh';
+     h1Element.style.textAlign = 'center';
+     successMessage.appendChild(h1Element);
+     successMessage.appendChild(compteur);
+
      // Ajouter du style à la balise
      successMessage.style.backgroundColor = '#28a745';
      successMessage.style.color = '#fff';
@@ -128,15 +136,18 @@ fetch('/latest_photo')
      document.body.appendChild(successMessage);
      const image = document.body.appendChild(imageElement);
      image.style.position = 'absolute';
+     image.style.width= '400px'
      captureButtonEnabled = false
-     // Supprimer la balise après 5 secondes
-     setTimeout(function() {
+     afficherCompteur(8); // Démarre un compteur de 10 secondes
+
+      //Supprimer la balise après 5 secondes
+    setTimeout(function() {
          successMessage.remove();
          image.remove();
          captureButtonEnabled = true
          sendToSerialPort(5);
 
-     }, 5000);
+     }, 8000);
  })
      } else {
          console.error('Error uploading image:');
@@ -162,7 +173,7 @@ fetch('/latest_photo')
          document.body.appendChild(errorMessage);
          setTimeout(function() {
              errorMessage.remove();
-         }, 2000);
+         }, 3000);
      }
  })
  .catch(error => {
@@ -218,4 +229,26 @@ async function sendToSerialPort(message) {
 } catch (error) {
  console.error("Erreur lors de l'envoi du message :", error);
 }
+}
+function afficherCompteur(secondeRestantes) {
+    // Sélection de l'élément HTML où afficher le compteur
+    var compteurElement = document.getElementById('compteur');
+
+    // Affichage du compteur
+    compteurElement.innerText = "Prochaine prise de photo  dans " + secondeRestantes + " sec";
+
+    // Décrémentation du compteur chaque seconde
+    var compteurInterval = setInterval(function() {
+        secondeRestantes--;
+
+        // Mise à jour du texte du compteur
+        compteurElement.innerText = "Prochaine photo disponible dans " + secondeRestantes + " secondes";
+
+        // Arrêt du compteur quand il atteint zéro
+        if (secondeRestantes <= 0) {
+            clearInterval(compteurInterval);
+            compteurElement.innerText = "La photo est maintenant disponible !";
+            // Ajoutez ici le code à exécuter une fois que le compteur atteint zéro
+        }
+    }, 1000); // Actualisation du compteur toutes les 1000 millisecondes (1 seconde)
 }
